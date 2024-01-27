@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
-import {authService} from "../services/AuthService";
+import {authService} from "../../services/AuthService";
 
 export interface UserDto {
     name?: string;

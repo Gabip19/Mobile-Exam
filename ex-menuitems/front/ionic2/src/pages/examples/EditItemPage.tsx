@@ -21,7 +21,7 @@ import {
 } from '@ionic/react';
 import { getLogger } from '../../core';
 import { RouteComponentProps } from 'react-router';
-import { ItemsContext } from '../../contexts/ItemProvider';
+import { ItemsContext } from '../../contexts/examples/ItemProvider';
 import { Project } from '../../core/Project';
 import {camera} from "ionicons/icons"
 import { usePhotos } from '../../hooks/examples/usePhotos';

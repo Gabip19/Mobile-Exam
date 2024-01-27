@@ -24,10 +24,12 @@ import './variables.css';
 import { ItemsList } from './pages/examples/ItemListPage';
 import { EditItemPage } from './pages/examples/EditItemPage';
 import { AddItemPage } from './pages/examples/AddItemPage';
-import { ItemProvider } from './contexts/ItemProvider';
+import { ItemProvider } from './contexts/examples/ItemProvider';
 import { PrivateRoute } from "./components/examples/PrivateRoute";
-import { AuthProvider } from "./contexts/AuthProvider";
+import { AuthProvider } from "./contexts/examples/AuthProvider";
 import { LoginPage } from "./pages/examples/LoginPage";
+import {HomePage} from "./pages/HomePage";
+import {MenuItemsProvider} from "./contexts/MenuItemsContext";
 
 setupIonicReact();
 
@@ -35,15 +37,9 @@ const App: React.FC = () => (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <AuthProvider>
-            <Route path="/login" component={LoginPage} exact={true}/>
-            <ItemProvider>
-              <PrivateRoute path="/items" component={ItemsList} exact={true}/>
-              <Route path="/item" component={AddItemPage} exact={true}/>
-              <Route path="/item/:id" component={EditItemPage} exact={true}/>
-            </ItemProvider>
-            <Route exact path="/" render={() => <Redirect to="/items"/>}/>
-          </AuthProvider>
+            <MenuItemsProvider>
+                <Route exact path="/" component={HomePage}/>
+            </MenuItemsProvider>
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>

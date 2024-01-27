@@ -1,16 +1,12 @@
-import {Project} from "../core/Project";
 import {baseUrl} from "../core";
+import {MenuItemDto} from "../core/MenuItemDto";
 
-interface MessageData {
-    event: string;
-    payload: {
-        successMessage: string,
-        item: Project
-    };
+export interface MessageData {
+    menuItems: MenuItemDto[]
 }
 
-export const newWebSocket = (token: string, onMessage: (data: MessageData) => void) => {
-    const ws = new WebSocket(`ws://${baseUrl}`)
+export const newWebSocket = (onMessage: (data: MenuItemDto[]) => void) => {
+    const ws = new WebSocket(`ws://${baseUrl}`);
 
     ws.onopen = () => {
         console.log("WebSocket opened");
@@ -26,7 +22,7 @@ export const newWebSocket = (token: string, onMessage: (data: MessageData) => vo
     };
 
     ws.onmessage = messageEvent => {
-        console.log("WebSocket message: ", messageEvent.data);
+        console.log("WebSocket message: ", JSON.parse(messageEvent.data));
         onMessage(JSON.parse(messageEvent.data));
     };
 

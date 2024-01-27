@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { getLogger } from '../core';
+import { getLogger } from '../../core';
 import { Preferences } from '@capacitor/preferences';
-import { authService } from "../services/AuthService";
+import { authService } from "../../services/AuthService";
 
 const log = getLogger('AuthProvider');
 

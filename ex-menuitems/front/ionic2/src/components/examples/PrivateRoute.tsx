@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { AuthContext, AuthState } from '../../contexts/AuthProvider';
+import { AuthContext, AuthState } from '../../contexts/examples/AuthProvider';
 import { getLogger } from '../../core';
 
 const log = getLogger('Login');

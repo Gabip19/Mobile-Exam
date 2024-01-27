@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useReducer, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { getLogger } from '../core';
-import { newWebSocket } from "../services/WebSocketService";
-import { Project } from '../core/Project';
+import { getLogger } from '../../core';
+import { newWebSocket } from "../../services/WebSocketService";
+import { Project } from '../../core/Project';
 import { AuthContext } from "./AuthProvider";
-import { useNetwork } from '../hooks/examples/useNetwork';
+import { useNetwork } from '../../hooks/examples/useNetwork';
 import {useIonToast} from "@ionic/react";
 import { Preferences } from '@capacitor/preferences';
-import {apiService} from "../services/ApiService";
+import {apiService} from "../../services/ApiService";
 
 const log = getLogger('ItemProvider');
 
@@ -292,7 +292,7 @@ export const ItemProvider: React.FC<ItemProviderProps> = ({ children }) => {
         log('wsEffect - connecting');
         let closeWebSocket: () => void;
         if(token?.trim()){
-          closeWebSocket = newWebSocket(token, message => {
+          closeWebSocket = newWebSocket(message => {
             if (canceled) {
               return;
             }

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
 import ItemComponent from '../../components/examples/ItemComponent';
-import { ItemsContext } from '../../contexts/ItemProvider';
+import { ItemsContext } from '../../contexts/examples/ItemProvider';
 import { IonContent, 
          IonHeader, 
          IonList, 
@@ -21,7 +21,7 @@ import { IonContent,
          IonSelect, IonSelectOption } from '@ionic/react';
 
 import { add } from 'ionicons/icons';
-import { AuthContext } from "../../contexts/AuthProvider";
+import { AuthContext } from "../../contexts/examples/AuthProvider";
 import { NetworkState } from '../../components/examples/NetworkState';
 import { Project } from '../../core/Project';
 import {usePhotos} from "../../hooks/examples/usePhotos";
