@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {IonButton, IonItem, IonLabel} from "@ionic/react";
-import {OrderItemDto} from "../core/OrderItemDto";
+import {OrderItemDto} from "../../core/OrderItemDto";
 
 interface MenuItemProps {
     menuItem: OrderItemDto;

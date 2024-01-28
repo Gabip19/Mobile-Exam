@@ -21,15 +21,10 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './variables.css';
 
-import { ItemsList } from './pages/examples/ItemListPage';
-import { EditItemPage } from './pages/examples/EditItemPage';
-import { AddItemPage } from './pages/examples/AddItemPage';
-import { ItemProvider } from './contexts/examples/ItemProvider';
-import { PrivateRoute } from "./components/examples/PrivateRoute";
-import { AuthProvider } from "./contexts/examples/AuthProvider";
-import { LoginPage } from "./pages/examples/LoginPage";
-import {HomePage} from "./pages/HomePage";
-import {MenuItemsProvider} from "./contexts/MenuItemsContext";
+import {MenuItemsProvider} from "./contexts/examples/MenuItemsContext";
+import {MainPage} from "./pages/MainPage";
+import {AuthPage} from "./pages/AuthPage";
+import {MainAppProvider} from "./contexts/MainAppContext";
 
 setupIonicReact();
 
@@ -37,9 +32,10 @@ const App: React.FC = () => (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-            <MenuItemsProvider>
-                <Route exact path="/" component={HomePage}/>
-            </MenuItemsProvider>
+            <MainAppProvider>
+                <Route exact path="/auth" component={AuthPage}/>
+                <Route exact path="/" component={MainPage}/>
+            </MainAppProvider>
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>

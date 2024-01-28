@@ -1,8 +1,8 @@
 import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
-import {MenuItemDto} from "../core/MenuItemDto";
-import {usePreferences} from "../hooks/examples/usePreferences";
-import {newWebSocket} from "../services/WebSocketService";
-import {OrderItemDto} from "../core/OrderItemDto";
+import {MenuItemDto} from "../../core/MenuItemDto";
+import {usePreferences} from "../../hooks/examples/usePreferences";
+import {newWebSocket} from "../../services/WebSocketService";
+import {OrderItemDto} from "../../core/OrderItemDto";
 
 interface MenuItemsContextProps {
     itemsList: OrderItemDto[];

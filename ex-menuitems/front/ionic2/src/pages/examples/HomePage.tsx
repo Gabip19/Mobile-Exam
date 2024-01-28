@@ -9,9 +9,9 @@ import {
     IonSelectOption,
     IonTitle, IonToast
 } from "@ionic/react";
-import {useMenuItems} from "../contexts/MenuItemsContext";
-import MenuItem from "../components/MenuItem";
-import {menuItemsApiService} from "../services/MenuItemsApiService";
+import {useMenuItems} from "../../contexts/examples/MenuItemsContext";
+import MenuItem from "../../components/examples/MenuItem";
+import {menuItemsApiService} from "../../services/MenuItemsApiService";
 
 
 export const HomePage: React.FC<void> = () => {
