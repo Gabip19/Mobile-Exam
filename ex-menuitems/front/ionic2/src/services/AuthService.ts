@@ -1,14 +1,20 @@
-import axios from 'axios';
-import { baseUrl, config } from '../core';
+import {baseUrl} from '../core';
 
-const authUrl = `http://${baseUrl}/api/auth/login`;
+const authUrl = `http://${baseUrl}/auth`;
 
-export interface AuthProps {
+export interface QuestionIds {
     token: string;
+    questionIds: number[];
 }
 
 export const authService = {
-    login: async (username?: string, password?: string): Promise<AuthProps> => {
-        return axios.post(authUrl, {username, password}, config);
+    login: async (id: string): Promise<QuestionIds> => {
+        return fetch(authUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id }),
+        }).then(response => response.json());
     },
 }

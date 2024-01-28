@@ -1,4 +1,4 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -21,15 +21,8 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './variables.css';
 
-import { ItemsList } from './pages/examples/ItemListPage';
-import { EditItemPage } from './pages/examples/EditItemPage';
-import { AddItemPage } from './pages/examples/AddItemPage';
-import { ItemProvider } from './contexts/examples/ItemProvider';
-import { PrivateRoute } from "./components/examples/PrivateRoute";
-import { AuthProvider } from "./contexts/examples/AuthProvider";
-import { LoginPage } from "./pages/examples/LoginPage";
+import {AuthPage} from "./pages/AuthPage";
 import {HomePage} from "./pages/HomePage";
-import {MenuItemsProvider} from "./contexts/MenuItemsContext";
 
 setupIonicReact();
 
@@ -37,9 +30,8 @@ const App: React.FC = () => (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-            <MenuItemsProvider>
-                <Route exact path="/" component={HomePage}/>
-            </MenuItemsProvider>
+            <Route exact path="/auth" component={AuthPage} />
+            <Route exact path="/" component={HomePage}/>
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
