@@ -32,7 +32,6 @@ const App: React.FC = () => (
       <IonReactRouter>
         <IonRouterOutlet>
             <MainAppProvider>
-                <Route exact path="/auth" component={AuthPage}/>
                 <Route exact path="/" component={MainPage}/>
             </MainAppProvider>
         </IonRouterOutlet>

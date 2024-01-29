@@ -3,6 +3,8 @@ import {authConfig, baseUrl} from "../core";
 import {Project} from "../core/Project";
 import {MenuItem2Dto} from "../core/MenuItem2Dto";
 import {OrderItem2Dto} from "../core/OrderItem2Dto";
+import {Question} from "../core/Question";
+import {Answer} from "../core/Answer";
 
 const getItemsUrl = `http://${baseUrl}/api/item`;
 const updateItemUrl = `http://${baseUrl}/api/item`;
@@ -11,7 +13,44 @@ const loginUrl = `http://${baseUrl}/auth`;
 const getItemUrl = `http://${baseUrl}/MenuItem`;
 const orderItemUrl = `http://${baseUrl}/OrderItem`;
 
+const downloadQuestionsUrl = `http://${baseUrl}/question`;
+const sendAnswersUrl = `http://${baseUrl}/quiz`;
+
 export const apiService = {
+    downloadQuestions: async (): Promise<Question[]> => {
+        // const response = await fetch(downloadQuestionsUrl, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     }
+        // });
+        //
+        // return await response.json();
+
+        return [{id: 1, text: 'text 1?'}, {id: 2, text: 'text 2?'}, {id: 3, text: 'text 3?'}, {id: 4, text: 'text 4?'}, {id: 5, text: 'text 5?'}]
+    },
+
+    sendQuiz: async (answers: Answer[]): Promise<number> => {
+        // console.log(answers);
+        //
+        // const response = await fetch(sendAnswersUrl, {
+        //     body: JSON.stringify(answers),
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     }
+        // });
+        //
+        // if (!response.ok) {
+        //     console.log('Failed');
+        //     throw new Error();
+        // }
+        //
+        // return response.json();
+
+        return 1;
+    },
+
     login: async (table: string): Promise<string> => {
         const response = await fetch(loginUrl, {
             body: JSON.stringify({ table: table }),
