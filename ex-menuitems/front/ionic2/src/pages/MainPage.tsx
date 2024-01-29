@@ -1,18 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {
-    IonButton,
-    IonContent,
-    IonInput, IonList,
-    IonPage,
-    IonTitle,
+    IonContent, IonList,
+    IonPage, IonSelect, IonSelectOption,
 } from "@ionic/react";
 import {useMainContext} from "../contexts/MainAppContext";
-import {QuizComponent} from "../components/QuizComponent";
+import {AssetComponent} from "../components/AssetComponent";
+import {AssetDto} from "../core/AssetDto";
 
 export const MainPage: React.FC<void> = () => {
-    const { questions, downloadQuestions, downloadFailed, currentQuestion, goNextQuestion, answerQuestion, solvedQuizzes } = useMainContext();
-    const [answer, setAnswer] = useState<string>();
-
     // useEffect(() => {
     //     let canceled = false;
     //     if (query !== '') {
@@ -59,69 +54,155 @@ export const MainPage: React.FC<void> = () => {
     //     setLocalNewOffer(newOffer);
     // }, [newOffer]);
 
+    const { assets, downloaded, username } = useMainContext();
+    const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
     useEffect(() => {
-        if (downloadFailed) {
-            alert("Download Failed!");
+        if (downloaded) {
+            alert('Download finished');
         }
-    }, [downloadFailed]);
+    }, [downloaded]);
 
-    const handleRetry = () => {
-        console.log('Retrying to download');
-        downloadQuestions();
+    /*
+    `name` cu un background indicand starea lucrului relativ la utilizatorul curent:
+   `red` daca lucrul este imprumutat de utilizatorul curent;
+   `green` daca lucrul poate fi imprumutat imediat de utilizatorul curent;
+   `yellow` daca utilizatorul face parte din lista `desiredBy`, dar nu este primul in lista;
+   `white`, in caz contrar [1p].
+     */
+    const computeState = (item: AssetDto): string => {
+        if (item.takenBy === username) {
+            return 'red';
+        } else if (item.desiredBy.length > 0 && item.desiredBy.includes(username!) && item.desiredBy[0] !== username) {
+            return 'yellow'
+        } else if (item.desiredBy.length > 0 && item.desiredBy[0] === username) {
+            return 'green';
+        }
+        return 'white';
     }
 
-    const handleStartQuiz = () => {
-        goNextQuestion();
+    const handleFilterChange = (value: string) => {
+        if (value === 'all') {
+            setActiveFilter(null);
+        } else {
+            setActiveFilter(value);
+        }
     }
 
-    const handleNextQuestion = () => {
-        if (!answer) return;
-
-        console.log('Question answer: ', answer);
-        answerQuestion(answer);
-    }
+    useEffect(() => {
+        console.log(activeFilter)
+    }, [activeFilter]);
 
     return (
         <IonPage>
-            {(currentQuestion === undefined || downloadFailed) && (
-                <IonContent>
-                    {currentQuestion === undefined && (
-                        <IonButton disabled={downloadFailed || questions.length === 0} onClick={handleStartQuiz}> Start Quiz </IonButton>
+            <IonContent>
+                <IonSelect onIonChange={e => handleFilterChange(e.detail.value)}>
+                    <IonSelectOption value={'all'}>
+                        All
+                    </IonSelectOption>
+                    <IonSelectOption value={'red'}>
+                        Red
+                    </IonSelectOption>
+                    <IonSelectOption value={'yellow'}>
+                        Yellow
+                    </IonSelectOption>
+                    <IonSelectOption value={'green'}>
+                        Green
+                    </IonSelectOption>
+                    <IonSelectOption value={'white'}>
+                        White
+                    </IonSelectOption>
+                </IonSelect>
+                <IonList>
+                    {assets && (
+                        assets.map((each, index) => {
+                            const state = computeState(each);
+
+                            if (!activeFilter) {
+                                return <AssetComponent
+                                    key={index}
+                                    item={each}
+                                    state={computeState(each)}
+                                />
+                            } else {
+                                if (activeFilter === state) {
+                                    return <AssetComponent
+                                        key={index}
+                                        item={each}
+                                        state={computeState(each)}
+                                    />
+                                }
+                            }
+                        })
                     )}
-                    {downloadFailed && (
-                        <>
-                            <IonTitle> Download Failed </IonTitle>
-                            <IonButton onClick={handleRetry}> Retry </IonButton>
-                        </>
-                    )}
-                </IonContent>
-            )}
-            {currentQuestion && (
-                <IonContent>
-                    <h1 style={{textAlign: "center"}}> {currentQuestion.text} </h1>
-                    <IonInput
-                        label="Answer:"
-                        placeholder="Your answer"
-                        style={{textAlign: "center", border: "1px solid black"}}
-                        onIonInput={(event) => setAnswer(event.detail.value!)}
-                    />
-                    <IonButton expand="full" onClick={handleNextQuestion}> Next </IonButton>
-                </IonContent>
-            )}
-            {solvedQuizzes.length !== 0 && (
-                <>
-                    <IonContent>
-                        <h1> Solved Quizzes: </h1>
-                        <IonList>
-                            {solvedQuizzes.map((each, index) => {
-                                return <QuizComponent key={index} quiz={each} />
-                            })}
-                        </IonList>
-                    </IonContent>
-                </>
-            )}
+                </IonList>
+            </IonContent>
         </IonPage>
     );
+
+    // useEffect(() => {
+    //     if (downloadFailed) {
+    //         alert("Download Failed!");
+    //     }
+    // }, [downloadFailed]);
+    //
+    // const handleRetry = () => {
+    //     console.log('Retrying to download');
+    //     downloadQuestions();
+    // }
+    //
+    // const handleStartQuiz = () => {
+    //     goNextQuestion();
+    // }
+    //
+    // const handleNextQuestion = () => {
+    //     if (!answer) return;
+    //
+    //     console.log('Question answer: ', answer);
+    //     answerQuestion(answer);
+    // }
+
+    // return (
+    //     <IonPage>
+    //         {(currentQuestion === undefined || downloadFailed) && (
+    //             <IonContent>
+    //                 {currentQuestion === undefined && (
+    //                     <IonButton disabled={downloadFailed || questions.length === 0} onClick={handleStartQuiz}> Start Quiz </IonButton>
+    //                 )}
+    //                 {downloadFailed && (
+    //                     <>
+    //                         <IonTitle> Download Failed </IonTitle>
+    //                         <IonButton onClick={handleRetry}> Retry </IonButton>
+    //                     </>
+    //                 )}
+    //             </IonContent>
+    //         )}
+    //         {currentQuestion && (
+    //             <IonContent>
+    //                 <h1 style={{textAlign: "center"}}> {currentQuestion.text} </h1>
+    //                 <IonInput
+    //                     label="Answer:"
+    //                     placeholder="Your answer"
+    //                     style={{textAlign: "center", border: "1px solid black"}}
+    //                     onIonInput={(event) => setAnswer(event.detail.value!)}
+    //                 />
+    //                 <IonButton expand="full" onClick={handleNextQuestion}> Next </IonButton>
+    //             </IonContent>
+    //         )}
+    //         {solvedQuizzes.length !== 0 && (
+    //             <>
+    //                 <IonContent>
+    //                     <h1> Solved Quizzes: </h1>
+    //                     <IonList>
+    //                         {solvedQuizzes.map((each, index) => {
+    //                             return <QuizComponent key={index} quiz={each} />
+    //                         })}
+    //                     </IonList>
+    //                 </IonContent>
+    //             </>
+    //         )}
+    //     </IonPage>
+    // );
 
     // return (
     //     <IonPage>

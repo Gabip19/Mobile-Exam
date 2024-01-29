@@ -4,24 +4,24 @@ import {useMainContext} from "../contexts/MainAppContext";
 import {useHistory} from "react-router";
 
 export const AuthPage: React.FC<void> = () => {
-    const [inputTable, setInputTable] = useState('');
     const history = useHistory();
-    const { login, table } = useMainContext();
+    const { login, username } = useMainContext();
+    const [inputUsername, setInputUsername] = useState<string>('');
 
     useEffect(() => {
-        if (table) {
+        if (username) {
             history.push('/');
         }
-    }, [table]);
+    }, [username]);
 
     const handleLogin = () => {
-        login(inputTable).then(() => history.push('/')).catch(() => alert('Masa ocupata'));
+        login(inputUsername);
     }
 
     return (
         <IonPage>
-            <IonInput label="Table" onIonChange={(event) => setInputTable(event.detail.value!)}> </IonInput>
-            <IonButton onClick={handleLogin}> Login </IonButton>
+            <IonInput label="Username: " onIonInput={(event) => setInputUsername(event.detail.value!)}> </IonInput>
+            <IonButton onClick={handleLogin}> Next </IonButton>
         </IonPage>
     );
 }

@@ -1,12 +1,13 @@
 import {baseUrl} from "../core";
 import {MenuItemDto} from "../core/MenuItemDto";
 import {MenuItem2Dto} from "../core/MenuItem2Dto";
+import {AssetDto} from "../core/AssetDto";
 
 export interface MessageData {
     menuItems: MenuItemDto[]
 }
 
-export const newWebSocket = (onMessage: (data: MenuItem2Dto) => void) => {
+export const newWebSocket = (onMessage: (data: AssetDto[] | AssetDto) => void) => {
     const ws = new WebSocket(`ws://${baseUrl}`);
 
     ws.onopen = () => {

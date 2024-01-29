@@ -5,9 +5,9 @@ import {MenuItem2Dto} from "../core/MenuItem2Dto";
 import {OrderItem2Dto} from "../core/OrderItem2Dto";
 import {Question} from "../core/Question";
 import {Answer} from "../core/Answer";
+import {AssetDto} from "../core/AssetDto";
 
 const getItemsUrl = `http://${baseUrl}/api/item`;
-const updateItemUrl = `http://${baseUrl}/api/item`;
 const createItemUrl = `http://${baseUrl}/api/item`;
 const loginUrl = `http://${baseUrl}/auth`;
 const getItemUrl = `http://${baseUrl}/MenuItem`;
@@ -15,6 +15,7 @@ const orderItemUrl = `http://${baseUrl}/OrderItem`;
 
 const downloadQuestionsUrl = `http://${baseUrl}/question`;
 const sendAnswersUrl = `http://${baseUrl}/quiz`;
+const updateItemUrl = `http://${baseUrl}/asset`;
 
 export const apiService = {
     downloadQuestions: async (): Promise<Question[]> => {
@@ -51,9 +52,9 @@ export const apiService = {
         return 1;
     },
 
-    login: async (table: string): Promise<string> => {
+    login: async (username: string): Promise<string> => {
         const response = await fetch(loginUrl, {
-            body: JSON.stringify({ table: table }),
+            body: JSON.stringify({ table: username }),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -83,6 +84,23 @@ export const apiService = {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            console.log('Failed');
+            throw new Error();
+        }
+
+        return response.json();
+    },
+
+    updateItem: async (item: AssetDto): Promise<void> => {
+        const response = await fetch(`${updateItemUrl}/${item.id}`, {
+            body: JSON.stringify({ takenBy: item.takenBy, desiredBy: item.desiredBy }),
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
             }
         });
 
