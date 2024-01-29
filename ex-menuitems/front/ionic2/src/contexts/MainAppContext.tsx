@@ -1,13 +1,19 @@
-import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
-import {OrderItemDto} from "../core/OrderItemDto";
+import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {usePreferences} from "../hooks/examples/usePreferences";
+import {apiService} from "../services/ApiService";
+import {MenuItem2Dto} from "../core/MenuItem2Dto";
+import {OrderItem2Dto} from "../core/OrderItem2Dto";
 import {newWebSocket} from "../services/WebSocketService";
-import {MenuItemDto} from "../core/MenuItemDto";
 
 interface MainAppContextProps {
-    itemsList: OrderItemDto[];
-    fetching: boolean;
-    updateItem: (item: OrderItemDto) => void;
+    login: (table: string) => Promise<string>;
+    getItems: (query: string) => Promise<void>;
+    menuItems: MenuItem2Dto[];
+    orderItem: (item: OrderItem2Dto) => Promise<void>;
+    orderedItems: OrderItem2Dto[];
+    table: string;
+    failedOrders: OrderItem2Dto[];
+    newOffer?: MenuItem2Dto;
 }
 
 interface MainAppProviderProps {
@@ -15,74 +21,122 @@ interface MainAppProviderProps {
 }
 
 const MainAppContext = createContext<MainAppContextProps>({
-    itemsList: [],
-    fetching: false,
-    updateItem: () => {}
+    login: async () => {return ''},
+    getItems: async ()=> {},
+    menuItems: [],
+    orderItem: async () => {},
+    orderedItems: [],
+    table: '',
+    failedOrders: [],
 });
 
 export const MainAppProvider: React.FC<MainAppProviderProps> = ({ children }) => {
-    const [itemsList, setItemsList] = useState<OrderItemDto[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [disconnectWS, setDisconnectWS] = useState<(() => void) | null>(null);
+    const [token, setToken] = useState('');
+    const [menuItems, setMenuItems] = useState<MenuItem2Dto[]>([]);
+    const [orderedItems, setOrderedItems] = useState<OrderItem2Dto[]>([]);
+    const [table, setTable] = useState('');
+    const [failedOrders, setFailedOrders] = useState<OrderItem2Dto[]>([]);
+    const [newOffer, setNewOffer] = useState<MenuItem2Dto | undefined>(undefined);
     const { get, set } = usePreferences();
 
-    useEffect(() => {
-        const checkForItems = async () => {
-            console.log('checkItems');
-
-            const items = await get('items');
-            if (items == null) {
-                console.log('fetching items');
-
-                setIsFetching(true);
-                const disconnectFc = newWebSocket(handleMessageReceive);
-                console.log('connected to socket');
-
-                setDisconnectWS(() => disconnectFc);
-            } else {
-                console.log('found items');
-
-                setItemsList(JSON.parse(items));
-            }
-        };
-
-        const handleMessageReceive = (data: MenuItemDto[]) => {
-            const newItems: OrderItemDto[] = data.map(item => ({ name: item.name, code: item.code, quantity: 0 }));
-            setItemsList(newItems);
-            console.log('fetching done', newItems);
-            set('items', JSON.stringify(newItems)).then(() => setIsFetching(false));
+    const login = (table: string) => {
+        const doAsync = async () => {
+            const _token = await apiService.login(table);
+            setToken(_token);
+            setTable(table);
+            console.log(_token);
+            await set('table', table);
+            return _token;
         }
 
-        checkForItems();
+        return doAsync().then(response => response);
+    }
+
+    const getItems = async (query: string) => {
+        const items: MenuItem2Dto[] = await apiService.getItem(token, query);
+        console.log(items);
+        setMenuItems(items);
+    }
+
+    const orderItem = async (item: OrderItem2Dto) => {
+        const index = failedOrders.findIndex(value => value.code === item.code);
+        if (index !== -1) {
+            setFailedOrders(prevState => [
+                ...prevState.slice(0, index),
+                ...prevState.slice(index + 1)
+            ]);
+        }
+
+        setOrderedItems(prev => [...prev, item]);
+
+        apiService.orderItem(token, item)
+            .then(() => console.log('Ordered: ', item))
+            .then(() => set('orderedItems', JSON.stringify([...orderedItems, item])))
+            .catch(() => setFailedOrders(prevState => [...prevState, item]));
+    }
+
+    useEffect(() => {
+        console.log("Failed Orders Update:", failedOrders);
+    }, [failedOrders]);
+
+    useEffect(() => {
+        const checkTableAndOrderedItems = async () => {
+            const table = await get('table');
+            if (table) {
+                setTable(table);
+                setToken(table);
+            }
+
+            const orderedItems = await get('orderedItems');
+            if (orderedItems) {
+                const orderedItemsList: OrderItem2Dto[] = JSON.parse(orderedItems);
+                setOrderedItems(orderedItemsList);
+            }
+        }
+
+        const handleNewOffer = (item: MenuItem2Dto) => {
+            console.log('New offer');
+            setNewOffer(item);
+        }
+
+        const openWs = () => {
+            return newWebSocket(handleNewOffer);
+        }
+
+        const closeWs = openWs();
+        checkTableAndOrderedItems();
 
         return () => {
-            setItemsList([]);
-            if (disconnectWS) {
-                console.log('disconnecting');
-                disconnectWS();
-                setDisconnectWS(null);
-            }
-            setIsFetching(false);
+            closeWs();
         }
     }, []);
 
-    const updateItemInList = (updatedItem: OrderItemDto) => {
-        const index = itemsList.findIndex(el => el.code === updatedItem.code);
-
-        if (index !== -1) {
-            const updatedList: OrderItemDto[] = [
-                ...itemsList.slice(0, index),
-                {...itemsList[index], quantity: updatedItem.quantity},
-                ...itemsList.slice(index + 1),
-            ];
-
-            setItemsList(updatedList);
-            set('items', JSON.stringify(updatedList));
-        }
-    };
+    // const updateItemInList = (updatedItem: OrderItemDto) => {
+    //     const index = itemsList.findIndex(el => el.code === updatedItem.code);
+    //
+    //     if (index !== -1) {
+    //         const updatedList: OrderItemDto[] = [
+    //             ...itemsList.slice(0, index),
+    //             {...itemsList[index], quantity: updatedItem.quantity},
+    //             ...itemsList.slice(index + 1),
+    //         ];
+    //
+    //         setItemsList(updatedList);
+    //         set('items', JSON.stringify(updatedList));
+    //     }
+    // };
 
     return (
-        <MainAppContext.Provider value={{ itemsList, fetching: isFetching, updateItem: updateItemInList }}>
+        <MainAppContext.Provider value={{
+            login: login,
+            menuItems: menuItems,
+            getItems: getItems,
+            orderItem: orderItem,
+            orderedItems: orderedItems,
+            table: table,
+            failedOrders: failedOrders,
+            newOffer: newOffer
+        }}>
             {children}
         </MainAppContext.Provider>
     );

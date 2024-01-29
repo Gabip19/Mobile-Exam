@@ -21,7 +21,6 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './variables.css';
 
-import {MenuItemsProvider} from "./contexts/examples/MenuItemsContext";
 import {MainPage} from "./pages/MainPage";
 import {AuthPage} from "./pages/AuthPage";
 import {MainAppProvider} from "./contexts/MainAppContext";
