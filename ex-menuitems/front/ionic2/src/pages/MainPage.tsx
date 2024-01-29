@@ -72,16 +72,16 @@ export const MainPage: React.FC<void> = () => {
             <IonSearchbar debounce={2000} onIonInput={(event) => setQuery(event.detail.value!)}> </IonSearchbar>
             <IonContent>
                 <IonList>
-                    {menuItems.slice(0, 5).map(each => {
-                        return <MenuItem2 key={each.code} item={each} changeSelection={changeSelectionCallback} isSelected={each.code == selectedItem?.code}/>
+                    {menuItems.slice(0, 5).map((each, index) => {
+                        return <MenuItem2 key={index} item={each} changeSelection={changeSelectionCallback} isSelected={each.code == selectedItem?.code}/>
                     })}
                 </IonList>
             </IonContent>
             <IonTitle> Ordered items: </IonTitle>
             <IonContent>
                 <IonList>
-                    {orderedItems.map(each => {
-                        return <OrderItem key={each.code} item={each} />
+                    {orderedItems.map((each, index) => {
+                        return <OrderItem key={index} item={each} />
                     })}
                 </IonList>
             </IonContent>
